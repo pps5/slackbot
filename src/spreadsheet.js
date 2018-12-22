@@ -1,4 +1,5 @@
 const BotResponse = require('./bot_response.js');
+const PropertyManager = require('./property_manager.js');
 
 function contains(text, searchWord) {
   return text.indexOf(searchWord) > -1;
@@ -15,7 +16,7 @@ function findTriggerWords(text) {
 }
 
 function getValues() {
-  const spreadsheetId = IdManager.getTriggerSheetId();
+  const spreadsheetId = PropertyManager.getTriggerSheetId();
   const values = SpreadsheetApp.openById(spreadsheetId)
         .getDataRange()
         .getValues();
@@ -24,13 +25,13 @@ function getValues() {
 }
 
 function writeLog(data) {
-  const ss = SpreadsheetApp.openById(IdManager.getLogSheetId());
+  const ss = SpreadsheetApp.openById(PropertyManager.getLogSheetId());
   data.forEach(function(v) { ss.appendRow(v); });
 }
 
 function isAlreadyProcessedEvent(ts) {
   const values = SpreadsheetApp
-        .openById(IdManager.getProcessedSheetId())
+        .openById(PropertyManager.getProcessedSheetId())
         .getDataRange()
         .getValues();
   for (var i = 0; i < values.length; i++) {
@@ -43,7 +44,7 @@ function isAlreadyProcessedEvent(ts) {
 
 function addAlreadyProcessedEvent(ts) {
   SpreadsheetApp
-    .openById(IdManager.getProcessedSheetId())
+    .openById(PropertyManager.getProcessedSheetId())
     .appendRow([ts]);
 }
 
