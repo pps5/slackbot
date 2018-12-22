@@ -1,6 +1,5 @@
 const spreadsheet = require('./spreadsheet.js');
-const Token = global.tryRequire('./token.js', 'Token');
-const Logging = require('./log.js');
+const PropertyManager = require('./property_manager.js');
 const POST_ENDPOINT = "https://slack.com/api/chat.postMessage";
 
 class EventHandler {
@@ -16,11 +15,11 @@ class EventHandler {
     spreadsheet.addAlreadyProcessedEvent(this.event.ts);
     const botResponse = spreadsheet.findTriggerWords(this.event.text);
     if (botResponse) {
-      Logging.log("Found trigger word", botResponse.triggerWord);
-      const options = this.createOptions(Token.getBotToken(), botResponse);
+      console.log("Found trigger word: " + botResponse.triggerWord);
+      const options = this.createOptions(PropertyManager.getBotToken(), botResponse);
       const response = UrlFetchApp.fetch(POST_ENDPOINT, options);
-      Logging.log("Request to slack", this.event);
-      Logging.log("Response from slack", response.getContentText());
+      console.log("Request to slack: " + this.event);
+      console.log("Response from slack: " + response.getContentText());
     }
   }
 
@@ -50,11 +49,11 @@ class EventHandler {
 
   shouldProcessEvent() {
     if (this.event.subtype === 'bot_message' || !this.event.user) {
-      Logging.log('Event from bot', this.event);
+      console.log('Event from bot', this.event);
       return false;
     }
     if (spreadsheet.isAlreadyProcessedEvent(this.event.ts)) {
-      Logging.log('Already processed', null);
+      console.log('Already processed', null);
       return false;
     }
     return true;
