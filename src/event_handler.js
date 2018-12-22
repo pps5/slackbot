@@ -1,5 +1,5 @@
 const spreadsheet = require('./spreadsheet.js');
-const Token = global.tryRequire('./token.js', 'Token');
+const PropertyManager = require('./property_manager.js');
 const Logging = require('./log.js');
 const POST_ENDPOINT = "https://slack.com/api/chat.postMessage";
 
@@ -17,7 +17,7 @@ class EventHandler {
     const botResponse = spreadsheet.findTriggerWords(this.event.text);
     if (botResponse) {
       Logging.log("Found trigger word", botResponse.triggerWord);
-      const options = this.createOptions(Token.getBotToken(), botResponse);
+      const options = this.createOptions(PropertyManager.getBotToken(), botResponse);
       const response = UrlFetchApp.fetch(POST_ENDPOINT, options);
       Logging.log("Request to slack", this.event);
       Logging.log("Response from slack", response.getContentText());
