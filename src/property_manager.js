@@ -16,6 +16,10 @@ class PropertyManager {
     return scriptProperties.getProperty('TriggerSheetId');
   }
 
+  static getReactionTriggerSheetId() {
+    return scriptProperties.getProperty('ReactionTriggerSheetId');
+  }
+
   static getLogSheetId() {
     return scriptProperties.getProperty('LogSheetId');
   }

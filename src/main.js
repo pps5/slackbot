@@ -6,7 +6,7 @@ const PropertyManager = require('./property_manager.js');
 
 global.doPost = function(e) {
   var data = JSON.parse(e.postData.contents);
-  console.log('PostData: ' + data);
+  console.log('PostData: ' + JSON.stringify(data));
 
   if (!isValidToken(data.token)) {
     console.error("Invalid Token: " + data);
@@ -18,7 +18,9 @@ global.doPost = function(e) {
     return Response.createChallengeResponse();
   }
 
-  new EventHandler(data.event).handleEvent();
+  const handler = new EventHandler(data.event);
+  handler.handleEvent();
+  handler.handleReaction();
   return Response.createSuccessResponse();
 }
 

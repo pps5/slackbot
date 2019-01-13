@@ -1,6 +1,7 @@
 const spreadsheet = require('./spreadsheet.js');
 const PropertyManager = require('./property_manager.js');
-const POST_ENDPOINT = "https://slack.com/api/chat.postMessage";
+const MESSAGE_POST_ENDPOINT = "https://slack.com/api/chat.postMessage";
+const REACTION_POST_ENDPOINT = "https://slack.com/api/reactions.add";
 
 class EventHandler {
 
@@ -17,8 +18,30 @@ class EventHandler {
     if (botResponse) {
       console.log("Found trigger word: " + botResponse.triggerWord);
       const options = this.createOptions(PropertyManager.getBotToken(), botResponse);
-      const response = UrlFetchApp.fetch(POST_ENDPOINT, options);
+      const response = UrlFetchApp.fetch(MESSAGE_POST_ENDPOINT, options);
       console.log("Request to slack: " + this.event);
+      console.log("Response from slack: " + response.getContentText());
+    }
+  }
+
+  handleReaction() {
+    const reactionResponse = spreadsheet.findTriggerWords(this.event.text, true);
+    if (reactionResponse) {
+      console.log("Found trigger word: " + reactionResponse.triggerWord);
+      const options = {
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + PropertyManager.getBotToken()
+        },
+        "payload": JSON.stringify({
+          "channel": this.event.channel,
+          "name": reactionResponse.reaction,
+          "timestamp": this.event.event_ts
+        })
+      };
+      const response = UrlFetchApp.fetch(REACTION_POST_ENDPOINT, options);
+      console.log("Request to slack: " + JSON.stringify(options));
       console.log("Response from slack: " + response.getContentText());
     }
   }

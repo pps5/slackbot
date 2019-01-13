@@ -1,22 +1,32 @@
 const BotResponse = require('./bot_response.js');
+const ReactionResponse = require('./reaction_response.js');
 const PropertyManager = require('./property_manager.js');
 
 function contains(text, searchWord) {
   return text.indexOf(searchWord) > -1;
 }
 
-function findTriggerWords(text) {
-  const values = getValues();
+function findTriggerWords(text, isReaction) {
+  const values = getValues(isReaction);
   for (var i = 0; i < values.length; i++) {
     if (contains(text, values[i][0])) {
-      return new BotResponse(values[i]);
+      if (isReaction) {
+        return new ReactionResponse(values[i]);
+      } else {
+        return new BotResponse(values[i]);
+      }
     }
   }
   return null;
 }
 
-function getValues() {
-  const spreadsheetId = PropertyManager.getTriggerSheetId();
+function getValues(isReaction) {
+  var spreadsheetId;
+  if (isReaction) {
+    spreadsheetId = PropertyManager.getReactionTriggerSheetId();
+  } else {
+    spreadsheetId = PropertyManager.getTriggerSheetId();
+  }
   const values = SpreadsheetApp.openById(spreadsheetId)
         .getDataRange()
         .getValues();
